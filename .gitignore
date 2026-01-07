@@ -1,4 +1,25 @@
-# Logs
+# --- Dependencies ---
+node_modules/
+.pnp
+.pnp.js
+
+# --- Build Outputs ---
+dist/
+dist-ssr/
+build/
+out/
+.next/
+
+# --- Environment Variables (CRITICAL SECURITY) ---
+# 모든 .env 파일을 명시적으로 제외하여 API 키 유출 방지
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env.*
+
+# --- Logs ---
 logs
 *.log
 npm-debug.log*
@@ -7,18 +28,25 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
+# --- Editor & OS Files ---
 .vscode/*
 !.vscode/extensions.json
-.idea
+.idea/
 .DS_Store
+Thumbs.db
+desktop.ini
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# --- Testing & Coverage ---
+coverage/
+.nyc_output/
+
+# --- Local Data (Scraping/DB Cache) ---
+# 크롤링 시 생성될 수 있는 임시 데이터 파일 제외
+data/*.json
+data/*.csv
+.cache/
