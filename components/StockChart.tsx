@@ -8,20 +8,16 @@ const StockChart: React.FC<StockChartProps> = ({ symbol }) => {
   const container = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!container.current) return;
-
-    // Clear previous script if any
-    container.current.innerHTML = "";
+    // 컨테이너가 없거나, 이미 스크립트가 들어가 있다면 실행하지 않음 (중복 방지)
+    if (!container.current || container.current.querySelector("script")) return;
 
     const script = document.createElement("script");
     script.src = "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
     script.type = "text/javascript";
     script.async = true;
-
-    // TradingView Widget Configuration
     script.innerHTML = JSON.stringify({
       "autosize": true,
-      "symbol": symbol, // Removed "NASDAQ:" prefix to let TradingView auto-resolve exchange (supports SPY, BTC, etc.)
+      "symbol": symbol, 
       "interval": "D",
       "timezone": "Etc/UTC",
       "theme": "dark",
@@ -40,6 +36,12 @@ const StockChart: React.FC<StockChartProps> = ({ symbol }) => {
     });
 
     container.current.appendChild(script);
+
+    // 컴포넌트가 화면에서 사라질 때(Unmount)만 내용을 비움
+    // 이렇게 하면 Strict Mode의 빠른 재실행에도 안전합니다.
+    return () => {
+        // cleanup 로직은 필요하다면 여기에 추가
+    };
   }, [symbol]);
 
   return (
