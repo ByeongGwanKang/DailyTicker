@@ -30,19 +30,9 @@ export interface SentimentData {
   totalVolume: number;
 }
 
-export interface AnalystRating {
-  id: number;
-  firm: string;
-  rating: 'Buy' | 'Hold' | 'Sell' | 'Outperform';
-  targetPrice: number;
-  date: string;
-  analystName?: string;
-}
-
 export interface DailyTickerState {
   stock: StockData;
   chartData: ChartPoint[];
   metrics: CommunityMetrics;
   sentiment: SentimentData;
-  analysts: AnalystRating[];
 }
