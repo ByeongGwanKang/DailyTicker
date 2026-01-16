@@ -11,8 +11,8 @@ import { Loader2 } from 'lucide-react';
 
 const App: React.FC = () => {
   const [data, setData] = useState<DailyTickerState | null>(null);
-  const [loading, setLoading] = useState(true);
   const [news, setNews] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchLatestData = async () => {
@@ -34,8 +34,8 @@ const App: React.FC = () => {
           .select('*')
           .eq('log_id', logData.id)
           .order('published_at', { ascending: false });
-
-        if (newsError) console.error("Error fetching news:", newsError);
+        
+        if (newsError) console.error("News fetch error:", newsError);
         setNews(newsData || []);
 
         // 3. 데이터 매핑
@@ -51,20 +51,14 @@ const App: React.FC = () => {
           },
           chartData: [],
           metrics: {
-            mentions: {
-              count: logData.mentions_count,
-              change: logData.mentions_change || 0
-            },
-            upvotes: {
-              count: logData.upvotes_count,
-              change: logData.upvotes_change || 0
-            }
+            mentions: { count: logData.mentions_count, change: logData.mentions_change || 0 },
+            upvotes: { count: logData.upvotes_count, change: logData.upvotes_change || 0 }
           },
           sentiment: {
             bullishPercent: Number(logData.sentiment_bullish),
             bearishPercent: Number(logData.sentiment_bearish),
             totalVolume: logData.mentions_count
-          }
+          },
         };
 
         setData(mappedData);
@@ -81,26 +75,26 @@ const App: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex flex-col items-center justify-center">
-        <Loader2 className="w-10 h-10 animate-spin mb-4 text-green-500" />
-        <p className="text-white font-medium tracking-wide animate-pulse">Loading Live Market Data...</p>
+      <div className="min-h-screen bg-gray-950 flex flex-col items-center justify-center">
+        <Loader2 className="w-10 h-10 animate-spin mb-4 text-emerald-500" />
+        <p className="text-gray-400 font-medium tracking-wide animate-pulse">Loading Live Market Data...</p>
       </div>
     );
   }
 
-  if (!data) {
-    return <div className="text-white text-center p-10">데이터를 불러오지 못했습니다.</div>;
-  }
+  if (!data) return <div className="text-white text-center p-10">데이터를 불러오지 못했습니다.</div>;
+
+  // 주가 등락에 따른 트렌드 결정 (상승장: up, 하락장: down)
+  const marketTrend = data.stock.changePercent >= 0 ? 'up' : 'down';
 
   return (
     <Layout>
       <HeroSection stock={data.stock} />
-      <StockChart symbol={data.stock.ticker} />
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-        <CommunityStats metrics={data.metrics} />
-        <SentimentCard sentiment={data.sentiment} />
-        <NewsList news={news} />
+      <StockChart symbol={data.stock.ticker} trend={marketTrend} />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <CommunityStats metrics={data.metrics} trend={marketTrend} />
+        <SentimentCard sentiment={data.sentiment} trend={marketTrend} />
+        <NewsList news={news} trend={marketTrend} />
       </div>
     </Layout>
   );
