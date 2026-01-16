@@ -16,11 +16,11 @@ export interface ChartPoint {
 export interface CommunityMetrics {
   mentions: {
     count: number;
-    change: number; // Percentage
+    change: number;
   };
   upvotes: {
     count: number;
-    change: number; // Percentage
+    change: number;
   };
 }
 
@@ -30,9 +30,18 @@ export interface SentimentData {
   totalVolume: number;
 }
 
+export interface NewsItem {
+  id?: number;
+  publisher: string;
+  title: string;
+  link: string;
+  published_at: string;
+}
+
 export interface DailyTickerState {
   stock: StockData;
   chartData: ChartPoint[];
   metrics: CommunityMetrics;
   sentiment: SentimentData;
+  news: NewsItem[];
 }

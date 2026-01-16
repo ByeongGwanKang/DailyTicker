@@ -11,13 +11,11 @@ import { Loader2 } from 'lucide-react';
 
 const App: React.FC = () => {
   const [data, setData] = useState<DailyTickerState | null>(null);
-  const [news, setNews] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchLatestData = async () => {
       try {
-        // 1. 최신 로그 가져오기
         const { data: logData, error: logError } = await supabase
           .from('daily_logs')
           .select('*')
@@ -28,7 +26,6 @@ const App: React.FC = () => {
         if (logError) throw logError;
         if (!logData) throw new Error("No data found in DB");
 
-        // 2. 뉴스 데이터 가져오기
         const { data: newsData, error: newsError } = await supabase
           .from('related_news')
           .select('*')
@@ -36,9 +33,7 @@ const App: React.FC = () => {
           .order('published_at', { ascending: false });
         
         if (newsError) console.error("News fetch error:", newsError);
-        setNews(newsData || []);
 
-        // 3. 데이터 매핑
         const mappedData: DailyTickerState = {
           stock: {
             ticker: logData.ticker,
@@ -59,6 +54,13 @@ const App: React.FC = () => {
             bearishPercent: Number(logData.sentiment_bearish),
             totalVolume: logData.mentions_count
           },
+          news: (newsData || []).map((n: any) => ({
+            id: n.id,
+            publisher: n.publisher,
+            title: n.title,
+            link: n.link,
+            published_at: n.published_at
+          }))
         };
 
         setData(mappedData);
@@ -84,7 +86,6 @@ const App: React.FC = () => {
 
   if (!data) return <div className="text-white text-center p-10">데이터를 불러오지 못했습니다.</div>;
 
-  // 주가 등락에 따른 트렌드 결정 (상승장: up, 하락장: down)
   const marketTrend = data.stock.changePercent >= 0 ? 'up' : 'down';
 
   return (
@@ -94,7 +95,7 @@ const App: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <CommunityStats metrics={data.metrics} trend={marketTrend} />
         <SentimentCard sentiment={data.sentiment} trend={marketTrend} />
-        <NewsList news={news} trend={marketTrend} />
+        <NewsList news={data.news} trend={marketTrend} /> 
       </div>
     </Layout>
   );
