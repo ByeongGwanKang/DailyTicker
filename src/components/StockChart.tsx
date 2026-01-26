@@ -45,10 +45,17 @@ const StockChart: React.FC<StockChartProps> = ({ symbol }) => {
   }, [symbol]);
 
   return (
-    <div className="w-full bg-daily-card border border-daily-border rounded-3xl p-1 overflow-hidden mb-8 relative group h-[500px]">
-      <div className="w-full h-full" ref={container}></div>
+    <div className="w-full h-[500px] mb-12">
+      {/* 수정됨: 
+        기존의 bg-white, shadow, border, p-6 등을 모두 제거했습니다.
+        이제 차트가 컨테이너 없이 깔끔하게 표시됩니다.
+      */}
+      <div 
+        ref={container} 
+        className="w-full h-full"
+      />
     </div>
   );
-};
+}
 
 export default StockChart;
